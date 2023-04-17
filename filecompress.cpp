@@ -1,17 +1,22 @@
-// Author
-// NetIDs
-
-
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <iomanip>
+#include "Huffman.h"
 
 using std::cout;
 using std::cin;
 using std::string;
 
+bool check_file(string file_name) {
+    ifstream myFile(file_name);
+    if(myFile.fail()){
+        return false;
+    }
+    myFile.close();
+    return true;
+}
 
 
 void displayCommands(){
@@ -25,6 +30,7 @@ void displayCommands(){
 }
 
 int main(int argc, char** argv){
+  Huffman huffman;
 
   cout << "Welcome to File Compression program\n";
 
@@ -53,6 +59,12 @@ int main(int argc, char** argv){
     
     if(command == '1'){
         ss >> input;
+        if (!check_file(input)) {
+          cout << "File does not exist!" << endl;
+        } else {
+          huffman.buildfile(input);
+        }
+        
         // build a new .hi file using the information in the file: input
         
        
