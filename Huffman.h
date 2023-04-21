@@ -7,14 +7,9 @@
 #include "mymap.h"
 #include "PriorityQueue.h"
 
+
 class Huffman {
 	private:
-		struct HuffmanNode {
-			int character;
-			int count;
-			HuffmanNode* zero;
-			HuffmanNode* one;
-		};
 
 	public:
 		/* helper function which inserts or increment a charcter into

@@ -1,58 +1,70 @@
-#include <iostream>
-#include <vector>
+#include<vector>
 
 using namespace std;
 
+struct HuffmanNode {
+	int character;
+	int count;
+	HuffmanNode* zero;
+	HuffmanNode* one;
+};
+
 class PriorityQueue {
-    public:
-    int length;
-    vector<pair<int, int> > heap;
-
-    // PriorityQueue(pair<int, int> pair, vector<string> data) {
+private:
+    vector<HuffmanNode*> heap;
     
-    PriorityQueue() {
-        length = 0;
-
-    }
-    // ~PriorityQueue() { }
-
-    void sortHelper(vector<pair<int, int>>& heap) {
-
-    }
-    struct sorter {
-        bool operator()(pair<int, int>& left, pair<int, int>& right) {
-            return left.second > right.second;
+    void heapify(int i) {
+        long unsigned int left = 2 * i + 1;
+        long unsigned int right = 2 * i + 2;
+        int largest = i;
+        if (left < heap.size() && heap[left]->count > heap[largest]->count) {
+            largest = left;
         }
-    };
-
-    void emplace(pair<int, int> k) {
-        heap.push_back(k);
-        sort(heap.begin(), heap.end(), sorter());
-        print();
-        length++;
+        if (right < heap.size() && heap[right]->count > heap[largest]->count) {
+            largest = right;
+        }
+        if (largest != i) {
+            swap(heap[i], heap[largest]);
+            heapify(largest);
+        }
+    }
+public:
+    void push(HuffmanNode* node) {
+        heap.push_back(node);
+        int index = heap.size() - 1;
+        int parent = (index - 1) / 2;
+        while (index > 0 && heap[parent]->count < heap[index]->count) {
+            swap(heap[index], heap[parent]);
+            index = parent;
+            parent = (index - 1) / 2;
+        }
     }
 
     void pop() {
-        heap.erase(heap.begin());
+        if (heap.empty()) {
+            return;
+        }
+        heap[0] = heap.back();
+        heap.pop_back();
+        heapify(0);
     }
 
-    pair<int,int> top() {
+    HuffmanNode* top() {
         return heap[0];
     }
 
     bool empty() {
-        if(size() == 0)
-            return true;
-        return false;
+        return heap.empty();
     }
 
     int size() {
-        return this -> length;
+        int size = heap.size();
+        return size;
     }
 
     void print() {
-        for(pair<int, int> l : heap)
-            cout << l.first << " " << l.second << endl;
+        for (auto i : heap) {
+            cout << i->count << endl;
+        }
     }
-
 };
