@@ -61,10 +61,4 @@ public:
         int size = heap.size();
         return size;
     }
-
-    void print() {
-        for (auto i : heap) {
-            cout << i->count << endl;
-        }
-    }
 };
