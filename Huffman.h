@@ -51,15 +51,8 @@ class Huffman {
 			
 			vector<int> keys; // create a vector of all the keys
 			
-			// for(auto x: map) {
-			for(int i = 0; i < 128; i++) {
-				// keys.push_back(x.first); // this is all the ascii chars 0 - 127
-				// if(map.contains(i)) {
-					
-				// }
+			for(int i = 0; i < 128; i++)
 				keys.push_back(i);
-				
-			}
 
 			// for range loop, this will push back node into priority queue
 			for (auto i : keys) {
@@ -89,11 +82,11 @@ class Huffman {
 				// create a new node
 				HuffmanNode* linked_node = new HuffmanNode();
 				
-				// 257 stands for not a character
+				// 129 stands for not a character
 				linked_node -> character = 129;
 
 				// add count and link the nodes
-				linked_node -> count = first_node->count + second_node->count;
+				linked_node -> count = first_node -> count + second_node->count;
 				linked_node -> zero = first_node;
 				linked_node -> one = second_node;
 				
@@ -136,16 +129,25 @@ class Huffman {
 			file.close();
 		}
 
-		HuffmanNode* insertNode(mymap<int, int>& encoding_map) {
+		// HuffmanNode* insertNode(mymap<int, int>& encoding_map) {
 			
+		// }
+		HuffmanNode* createNode(int c) {
+			HuffmanNode* node = new HuffmanNode();
+			node -> character = c;
+			node -> count = 0;
+			node -> zero = nullptr;
+			node -> one = nullptr;
+			return node;
 		}
 		
-		void buildTree(string& filename) {
-			mymap<int, int> encoding_map;
+		HuffmanNode* buildTree(string& filename) {
+			mymap<int, string> encoding_map;
 			ifstream fs(filename);
 			string line;
 
-			int a, b;
+			int a; 
+			string b;
 						
 			if(!fs.is_open())
 				cout << "Could Not Open";
@@ -153,10 +155,113 @@ class Huffman {
 			while(fs >> a >> b)
 				encoding_map.put(a, b);
 
+			HuffmanNode* root = createNode(129);
+			for (auto i : encoding_map) {
+				string path = encoding_map.get(i);
+				HuffmanNode* current = root;
+				
+				for (int j = 0; j < path.length(); j++) {
+					if (path[j] == '0') {
+						if (current -> zero == nullptr) {
+							HuffmanNode* node = createNode(129);
+							current -> zero = node;
+							current = node;
+							if (j == path.length()-1) {
+								current -> character = i;
+							}
+						} else {
+							current = current -> zero;
+							if (j == path.length()-1) {
+								current -> character = i;
+							}
+						}
+					} else {
+						if (current -> one == nullptr) {
+							HuffmanNode* node = createNode(129);
+							current -> one = node;
+							current = node;
+							if (j == path.length()-1) {
+								current -> character = i;
+							}
+						} else {
+							current = current -> one;
+							if (j == path.length()-1) {
+								current -> character = i;
+							}
+						}
+					}
+				}
+			}
 			
+			// mymap<int, string> v = buildEncodingMap(root);
+			// cout << v.toString() << endl;
+
+			return root;
 		}
 
-	
+		// recursively frees the memory allocated to the Huffman tree
+		void freeTree(HuffmanNode* node) {
+			if(node == nullptr)
+				return;
+
+			freeTree(node -> zero);
+			freeTree(node -> one);
+
+			delete node;
+		}
+
+
+		// compresses the file
+		// string compress(string filename) {
+		// 	ifstream fs(filename);
+		// 	unordered_map<int, int>  map;
+		// 	int size = 0;
+
+		// 	map = getFrequency(filename);
+		// 	HuffmanNode* huffNode = buildEncodingTree(map);
+		// 	mymap<int, string> theMap = buildEncodingMap(huffNode);
+
+		// 	ofbitstream output(filename + ".huf");
+		// 	output << map;
+
+		// 	string str = encode(fs, theMap, output, size, true);
+
+		// 	fs.close();
+		// 	output.close();
+
+		// 	freeTree(huffNode);
+
+		// 	return str;
+		// }
+
+// 	string compress(string filename) {
+// 		ifstream fs(filename);
+// 		hashmap hashMap;
+// 		int size = 0;
+
+// 		buildFrequencyMap(filename, true, hashMap);
+// 		// huffNode should be the one we get from command 2
+// 		HuffmanNode* huffNode = buildEncodingTree(hashMap);
+
+// 		mymap<int, string> theMap = buildEncodingMap(huffNode);
+
+// 		// Need do ourselfs
+// 		ofbitstream output(filename + ".huf");
+// 		output << hashMap;
+
+
+// 		string str = encode(fs, theMap, output, size, true);
+
+// 		fs.close();
+// 		output.close();
+
+// 		freeTree(huffNode);
+
+// 		return str;
+// }
+
+
+		
 };
 
 
