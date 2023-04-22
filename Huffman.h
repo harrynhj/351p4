@@ -143,17 +143,18 @@ class Huffman {
 		
 		HuffmanNode* buildTree(string& filename) {
 			mymap<int, string> encoding_map;
+			vector<string> info;
 			ifstream fs(filename);
 			string line;
 
 			int a; 
 			string b;
-						
-			if(!fs.is_open())
-				cout << "Could Not Open";
 			
-			while(fs >> a >> b)
+			while(fs >> a >> b) {
 				encoding_map.put(a, b);
+				info.push_back(b);
+			}
+
 
 			HuffmanNode* root = createNode(129);
 			for (auto i : encoding_map) {
@@ -208,6 +209,12 @@ class Huffman {
 			freeTree(node -> one);
 
 			delete node;
+		}
+
+
+		void compress(HuffmanNode* root, string filename) {
+
+
 		}
 
 

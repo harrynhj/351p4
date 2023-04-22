@@ -30,6 +30,7 @@ void displayCommands(){
 }
 
 int main(int argc, char** argv){
+  bool two_done = false;
   Huffman huffman;
 
   cout << "Welcome to File Compression program\n";
@@ -73,12 +74,23 @@ int main(int argc, char** argv){
     if(command == '2'){
         ss >> input;
         // load a .hi file to later perform compression and decompression
-        huffman.buildTree(input);
+        if (!check_file(input)) {
+          cout << "File does not exist!" << endl;
+        } else {
+          huffman.buildTree(input);
+          two_done = true;
+        }
+        
         
     }
         
     if(command == '3'){
         ss >> input;
+        if (two_done) {
+
+        } else {
+          cout << "Please run command 2 first!" << endl;
+        }
         // use the current .hi file to compress the file in input
     }
 
