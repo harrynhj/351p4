@@ -30,8 +30,9 @@ void displayCommands(){
 }
 
 int main(int argc, char** argv){
-  bool two_done = false;
   Huffman huffman;
+  HuffmanNode* root = nullptr;
+  vector<string> bits;
 
   cout << "Welcome to File Compression program\n";
 
@@ -77,8 +78,7 @@ int main(int argc, char** argv){
         if (!check_file(input)) {
           cout << "File does not exist!" << endl;
         } else {
-          huffman.buildTree(input);
-          two_done = true;
+          root = huffman.buildTree(input, bits);
         }
         
         
@@ -86,7 +86,12 @@ int main(int argc, char** argv){
         
     if(command == '3'){
         ss >> input;
-        if (two_done) {
+        if (root != nullptr) {
+          if (!check_file(input)) {
+            cout << "File does not exist!" << endl;
+          } else {
+            huffman.compress(root, bits, input);
+          }
 
         } else {
           cout << "Please run command 2 first!" << endl;

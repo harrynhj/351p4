@@ -1,11 +1,12 @@
 #include <iostream>
-#include <fstream>
+//#include <fstream>
 #include <vector>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include "mymap.h"
 #include "PriorityQueue.h"
+#include "bitstream.h"
 
 
 class Huffman {
@@ -141,9 +142,8 @@ class Huffman {
 			return node;
 		}
 		
-		HuffmanNode* buildTree(string& filename) {
+		HuffmanNode* buildTree(string& filename, vector<string>& info) {
 			mymap<int, string> encoding_map;
-			vector<string> info;
 			ifstream fs(filename);
 			string line;
 
@@ -160,19 +160,19 @@ class Huffman {
 			for (auto i : encoding_map) {
 				string path = encoding_map.get(i);
 				HuffmanNode* current = root;
-				
-				for (int j = 0; j < path.length(); j++) {
+				int path_length = path.length();
+				for (int j = 0; j < path_length; j++) {
 					if (path[j] == '0') {
 						if (current -> zero == nullptr) {
 							HuffmanNode* node = createNode(129);
 							current -> zero = node;
 							current = node;
-							if (j == path.length()-1) {
+							if (j == path_length-1) {
 								current -> character = i;
 							}
 						} else {
 							current = current -> zero;
-							if (j == path.length()-1) {
+							if (j == path_length-1) {
 								current -> character = i;
 							}
 						}
@@ -181,12 +181,12 @@ class Huffman {
 							HuffmanNode* node = createNode(129);
 							current -> one = node;
 							current = node;
-							if (j == path.length()-1) {
+							if (j == path_length-1) {
 								current -> character = i;
 							}
 						} else {
 							current = current -> one;
-							if (j == path.length()-1) {
+							if (j == path_length-1) {
 								current -> character = i;
 							}
 						}
@@ -212,9 +212,19 @@ class Huffman {
 		}
 
 
-		void compress(HuffmanNode* root, string filename) {
-
-
+		void compress(HuffmanNode* root, vector<string>& info, string filename) {
+			ofbitstream output(filename + ".hc");
+			ifstream input(filename);
+			char c;
+			string result = "";
+			while (input.get(c)) {
+				result += info[(int)c];
+			}
+			for (char c : result) {
+            	output.writeBit(c == '0' ? 0 : 1);
+        	}
+			input.close();
+    		output.close();
 		}
 
 
