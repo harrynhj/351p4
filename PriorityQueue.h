@@ -16,24 +16,27 @@ private:
     void heapify(int i) {
         long unsigned int left = 2 * i + 1;
         long unsigned int right = 2 * i + 2;
-        int largest = i;
-        if (left < heap.size() && heap[left]->count > heap[largest]->count) {
-            largest = left;
+        int smallest = i;
+
+        if (left < heap.size() && heap[left] -> count < heap[smallest] -> count)
+            smallest = left;
+
+        if (right < heap.size() && heap[right] -> count < heap[smallest] -> count)
+            smallest = right;
+
+        if (smallest != i) {
+            swap(heap[i], heap[smallest]);
+            heapify(smallest);
         }
-        if (right < heap.size() && heap[right]->count > heap[largest]->count) {
-            largest = right;
-        }
-        if (largest != i) {
-            swap(heap[i], heap[largest]);
-            heapify(largest);
-        }
-    }
+}
+
 public:
     void push(HuffmanNode* node) {
         heap.push_back(node);
         int index = heap.size() - 1;
         int parent = (index - 1) / 2;
-        while (index > 0 && heap[parent]->count < heap[index]->count) {
+
+        while (index > 0 && heap[parent] -> count > heap[index] -> count) {
             swap(heap[index], heap[parent]);
             index = parent;
             parent = (index - 1) / 2;
@@ -41,9 +44,9 @@ public:
     }
 
     void pop() {
-        if (heap.empty()) {
+        if (heap.empty())
             return;
-        }
+
         heap[0] = heap.back();
         heap.pop_back();
         heapify(0);
@@ -61,4 +64,10 @@ public:
         int size = heap.size();
         return size;
     }
+
+    void printPQ() {
+        for(auto x : heap)
+            cout << x -> count << endl;
+    }
+
 };

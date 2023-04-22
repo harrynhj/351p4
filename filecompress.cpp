@@ -73,6 +73,7 @@ int main(int argc, char** argv){
     if(command == '2'){
         ss >> input;
         // load a .hi file to later perform compression and decompression
+        huffman.buildTree(input);
         
     }
         
