@@ -90,7 +90,7 @@ int main(int argc, char** argv){
           if (!check_file(input)) {
             cout << "File does not exist!" << endl;
           } else {
-            huffman.compress(root, bits, input);
+            huffman.encode(root, bits, input);
           }
 
         } else {
@@ -101,11 +101,24 @@ int main(int argc, char** argv){
 
     if(command == '4'){
         ss >> input;
+        if (root != nullptr) {
+          if (!check_file(input)) {
+            cout << "File does not exist!" << endl;
+          } else {
+            huffman.decode(root, input);
+          }
+        } else {
+          cout << "Please run command 2 first!" << endl;
+        }
         // use the current .hi file to decompress the file in input
         // note if the file was not compressed using the same .hi file, the output will be meaningless
     }
 
     if(command == '5' || command == 'q'){
+        if (root != nullptr) {
+          huffman.freeTree(root);
+        }
+
         done = true;
     }
 

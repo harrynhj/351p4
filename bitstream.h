@@ -39,7 +39,7 @@
  * A constant representing the PSEUDO_EOF marker that you will
  * write at the end of your Huffman-encoded file.
  */
-const int PSEUDO_EOF = 256;
+const string END = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 
 /**
  * Constant: NOT_A_CHAR

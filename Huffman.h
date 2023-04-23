@@ -22,6 +22,7 @@ class Huffman {
 		}
 
 		PriorityQueue pq;
+
 	
 	public:
 
@@ -212,20 +213,62 @@ class Huffman {
 		}
 
 
-		void compress(HuffmanNode* root, vector<string>& info, string filename) {
+		void encode(HuffmanNode* root, vector<string>& info, string& filename) {
 			ofbitstream output(filename + ".hc");
 			ifstream input(filename);
+			
 			char c;
 			string result = "";
 			while (input.get(c)) {
 				result += info[(int)c];
 			}
+			result += info[0];
+
 			for (char c : result) {
             	output.writeBit(c == '0' ? 0 : 1);
         	}
 			input.close();
     		output.close();
 		}
+
+		void decode(HuffmanNode* root, string& filename) {
+			ifbitstream input(filename);
+			ofstream output(filename + ".hc");
+			
+			// initialize variables
+			string result = "";
+			HuffmanNode* node = root;
+			
+			// while not eof, read chars from input
+			while (!input.eof()) {
+				// if reach a leaf node, add to result
+				if (node -> character != 129) {
+					// if is other than eof, add to result and output and reset node to root
+
+					if (node -> character == 0) {
+						input.close();
+    					output.close();
+						return;
+					}
+
+					output.put(char(node -> character));
+					result += char(node -> character);
+					node = root;
+				}
+				
+				// if is not a leaf node, read bit from input and traverse the tree
+				int bit = input.readBit();
+				if (bit == 0) {
+					node = node -> zero;
+				} else {
+					node = node -> one;
+				}
+			}
+			input.close();
+    		output.close();
+		}
+
+
 
 
 		// compresses the file
