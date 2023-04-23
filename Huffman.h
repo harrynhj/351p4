@@ -22,6 +22,7 @@ class Huffman {
 		}
 
 		PriorityQueue pq;
+		string padding = "";
 
 	
 	public:
@@ -147,11 +148,17 @@ class Huffman {
 			mymap<int, string> encoding_map;
 			ifstream fs(filename);
 			string line;
+			padding = "";
 
 			int a; 
 			string b;
 			
 			while(fs >> a >> b) {
+				if (padding.length() == 0) {
+					if (b.length() >= 8) {
+						padding = b;
+					}
+				}
 				encoding_map.put(a, b);
 				info.push_back(b);
 			}
@@ -197,7 +204,7 @@ class Huffman {
 			
 			// mymap<int, string> v = buildEncodingMap(root);
 			// cout << v.toString() << endl;
-
+			cout << padding << endl;
 			return root;
 		}
 
@@ -222,7 +229,11 @@ class Huffman {
 			while (input.get(c)) {
 				result += info[(int)c];
 			}
-			result += info[0];
+			// Check if need padding or not
+			if (result.length() % 8 != 0) {
+				int need = 8 - (result.length() % 8);
+				result += padding.substr(0, need);
+			}
 
 			for (char c : result) {
             	output.writeBit(c == '0' ? 0 : 1);
@@ -245,11 +256,11 @@ class Huffman {
 				if (node -> character != 129) {
 					// if is other than eof, add to result and output and reset node to root
 
-					if (node -> character == 0) {
-						input.close();
-    					output.close();
-						return;
-					}
+					// if (node -> character == 0) {
+					// 	input.close();
+    				// 	output.close();
+					// 	return;
+					// }
 
 					output.put(char(node -> character));
 					result += char(node -> character);
