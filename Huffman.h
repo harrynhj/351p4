@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "mymap.h"
 #include "PriorityQueue.h"
-#include "bitstream.h"
+
 
 
 class Huffman {
@@ -20,6 +20,18 @@ class Huffman {
 				map.emplace(c, 1);
 			else
 				map.at(c)++;
+		}
+
+		// Helper function to convert bit into unsigned char, inorder to compress
+		unsigned char convertBit(string bits) {
+			int sum = 0;
+			for (int i = 0; i < 8; i++) {
+				sum <<= 1;
+				if (bits[i] == '1') {
+					sum += 1;
+				}
+			}
+			return (unsigned char) sum;
 		}
 
 		PriorityQueue pq;
@@ -221,8 +233,7 @@ class Huffman {
 
 
 		void encode(HuffmanNode* root, vector<string>& info, string& filename) {
-			ofbitstream output(filename + ".hc");
-			ofstream outputs(filename + ".hc");
+			ofstream output(filename + ".hc");
 			ifstream input(filename);
 			
 			char c;
@@ -230,40 +241,33 @@ class Huffman {
 			while (input.get(c)) {
 				result += info[(int)c];
 			}
-			cout << "padding: " << padding << endl;
-			// Check if need padding or not
-			cout << "length before padding: " << result.length() << endl;
-			cout << result << endl;
+			// cout << "padding: " << padding << endl;
+			// // Check if need padding or not
+			// cout << "length before padding: " << result.length() << endl;
+			// cout << result << endl;
 			if (result.length() % 8 != 0) {
 				int need = 8 - (result.length() % 8);
 				result += padding.substr(0, need);
 			}
+			// cout << "encode result: " << result << endl;
+			// cout << "length after padding: " << result.length() << endl;
+			// cout << result << endl << endl;
 
 			// for (char c : result) {
             // 	output.writeBit(c == '0' ? 0 : 1);
         	// }
-			int result_length = result.length();
-			cout << "length after padding: " << result_length << endl;
-			cout << result << endl;
-			
-			unsigned char u_c;
-			int temp_i = 0;
-			for (int i = 0; i < 8; i++) {
-				temp_i <<= 1;
-				if (result[i] == '1') {
-					temp_i += 1;
-				}
+			int length = result.length();
+			for (int i = 0; i < length; i+=8) {
+				unsigned char input_c = convertBit(result.substr(i,i+8));
+				// bitset<8> bits(input_c);
+				// cout << bits.to_string() << endl;
+				output << input_c;
 			}
-			u_c = (unsigned char) temp_i;
-			bitset<8> bits(u_c);
-
-			cout << "write: " << static_cast<int>(u_c) << endl;
-			cout << "write: " << bits.to_string() << endl;
+			// cout << "end" << endl;
 
 
 			input.close();
     		output.close();
-			outputs.close();
 		}
 
 		void decode(HuffmanNode* root, string& filename) {
@@ -279,31 +283,27 @@ class Huffman {
 			char c;
 			while (input.get(c)) {
 				bitset<8> bits(c);
-				string binaryStr = bits.to_string();
-				cout << binaryStr << endl;
-				// // if reach a leaf node, add to result
-				// if (node -> character != 129) {
-				// 	// if is other than eof, add to result and output and reset node to root
-
-				// 	// if (node -> character == 0) {
-				// 	// 	input.close();
-    			// 	// 	output.close();
-				// 	// 	return;
-				// 	// }
-
-				// 	output.put(char(node -> character));
-				// 	result += char(node -> character);
-				// 	node = root;
-				// }
-				
-				// // if is not a leaf node, read bit from input and traverse the tree
-				// //int bit = input.readBit();
-				// if (bit == 0) {
-				// 	node = node -> zero;
-				// } else {
-				// 	node = node -> one;
-				// }
+				result+= bits.to_string();
 			}
+
+			int length = result.length();
+			for (int i = 0; i < length; i++) {
+				// if reach a leaf node, add to result
+				if (node -> character != 129) {
+					// if is other than eof, add to result and output and reset node to root
+					output.put(char(node -> character));
+					result += char(node -> character);
+					node = root;
+				}
+				
+				// if is not a leaf node, read bit from input and traverse the tree
+				if (result[i] == '0') {
+					node = node -> zero;
+				} else {
+					node = node -> one;
+				}
+			}
+
 			input.close();
     		output.close();
 		}
