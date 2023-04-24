@@ -1,5 +1,6 @@
 #include <iostream>
-//#include <fstream>
+#include <fstream>
+#include <bitset>
 #include <vector>
 #include <functional>
 #include <string>
@@ -204,7 +205,6 @@ class Huffman {
 			
 			// mymap<int, string> v = buildEncodingMap(root);
 			// cout << v.toString() << endl;
-			cout << padding << endl;
 			return root;
 		}
 
@@ -222,6 +222,7 @@ class Huffman {
 
 		void encode(HuffmanNode* root, vector<string>& info, string& filename) {
 			ofbitstream output(filename + ".hc");
+			ofstream outputs(filename + ".hc");
 			ifstream input(filename);
 			
 			char c;
@@ -229,21 +230,45 @@ class Huffman {
 			while (input.get(c)) {
 				result += info[(int)c];
 			}
+			cout << "padding: " << padding << endl;
 			// Check if need padding or not
+			cout << "length before padding: " << result.length() << endl;
+			cout << result << endl;
 			if (result.length() % 8 != 0) {
 				int need = 8 - (result.length() % 8);
 				result += padding.substr(0, need);
 			}
 
-			for (char c : result) {
-            	output.writeBit(c == '0' ? 0 : 1);
-        	}
+			// for (char c : result) {
+            // 	output.writeBit(c == '0' ? 0 : 1);
+        	// }
+			int result_length = result.length();
+			cout << "length after padding: " << result_length << endl;
+			cout << result << endl;
+			
+			unsigned char u_c;
+			int temp_i = 0;
+			for (int i = 0; i < 8; i++) {
+				temp_i <<= 1;
+				if (result[i] == '1') {
+					temp_i += 1;
+				}
+			}
+			u_c = (unsigned char) temp_i;
+			bitset<8> bits(u_c);
+
+			cout << "write: " << static_cast<int>(u_c) << endl;
+			cout << "write: " << bits.to_string() << endl;
+
+
 			input.close();
     		output.close();
+			outputs.close();
 		}
 
 		void decode(HuffmanNode* root, string& filename) {
-			ifbitstream input(filename);
+			//ifbitstream input(filename);
+			ifstream input(filename, ios::binary);
 			ofstream output(filename + ".hc");
 			
 			// initialize variables
@@ -251,29 +276,33 @@ class Huffman {
 			HuffmanNode* node = root;
 			
 			// while not eof, read chars from input
-			while (!input.eof()) {
-				// if reach a leaf node, add to result
-				if (node -> character != 129) {
-					// if is other than eof, add to result and output and reset node to root
+			char c;
+			while (input.get(c)) {
+				bitset<8> bits(c);
+				string binaryStr = bits.to_string();
+				cout << binaryStr << endl;
+				// // if reach a leaf node, add to result
+				// if (node -> character != 129) {
+				// 	// if is other than eof, add to result and output and reset node to root
 
-					// if (node -> character == 0) {
-					// 	input.close();
-    				// 	output.close();
-					// 	return;
-					// }
+				// 	// if (node -> character == 0) {
+				// 	// 	input.close();
+    			// 	// 	output.close();
+				// 	// 	return;
+				// 	// }
 
-					output.put(char(node -> character));
-					result += char(node -> character);
-					node = root;
-				}
+				// 	output.put(char(node -> character));
+				// 	result += char(node -> character);
+				// 	node = root;
+				// }
 				
-				// if is not a leaf node, read bit from input and traverse the tree
-				int bit = input.readBit();
-				if (bit == 0) {
-					node = node -> zero;
-				} else {
-					node = node -> one;
-				}
+				// // if is not a leaf node, read bit from input and traverse the tree
+				// //int bit = input.readBit();
+				// if (bit == 0) {
+				// 	node = node -> zero;
+				// } else {
+				// 	node = node -> one;
+				// }
 			}
 			input.close();
     		output.close();
